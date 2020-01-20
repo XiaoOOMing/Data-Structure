@@ -107,4 +107,5 @@ void MST_Prim2(MGraph *G);
 
 void Dijkstra(MGraph G, int v);
 
+void Floyd(MGraph G);
 #endif /* Graph_h */

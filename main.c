@@ -15,18 +15,17 @@ int main(int argc, const char * argv[]) {
     
     MGraph *G = (MGraph*)malloc(sizeof(Graph));
     
-    VertexType arr[] = {1,2,3,4,5};
+    VertexType arr[] = {0,1,2,3};
     int vex_num = sizeof(arr) / sizeof(VertexType);
     for (int i = 0; i < vex_num; i++) {
         G->Vex[i] = arr[i];
     }
     
-    EdgeType e[][5] = {
-        {0,5,3,INT_MAX,8},
-        {INT_MAX,0,2,1,INT_MAX},
-        {INT_MAX,INT_MAX,0,INT_MAX,4},
-        {INT_MAX,INT_MAX,1,0,INT_MAX},
-        {INT_MAX,INT_MAX,INT_MAX,INT_MAX,0},
+    EdgeType e[][4] = {
+        {0,1,3,8},
+        {INT_MAX,0,1,INT_MAX},
+        {INT_MAX,INT_MAX,0,4},
+        {INT_MAX,INT_MAX,INT_MAX,0},
     };
     
     for (int i = 0; i < vex_num; i++) {
@@ -42,6 +41,6 @@ int main(int argc, const char * argv[]) {
 //        printf("%d的第一个邻居编号是%d\n", i, FirstNeighbor(G, i));
 //    }
         
-    Dijkstra(*G, 0);
+    Floyd(*G);
     return 0;
 }

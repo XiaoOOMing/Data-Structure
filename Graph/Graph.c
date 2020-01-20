@@ -319,3 +319,41 @@ void Dijkstra(MGraph G, int v) {
 // 不使用于带有负权重的图
 // 时间复杂度O(v*v)
 
+
+/*---------------Floyd------------------*/
+
+void Floyd(MGraph G) {
+    int arr[G.vexnum][G.vexnum];
+    for (int i = 0; i < G.vexnum; i++) {
+        for (int j = 0; j < G.vexnum; j++) {
+            arr[i][j] = G.Edge[i][j];
+        }
+    }
+    
+    for (int i = 0; i < G.vexnum; i++) {
+        for (int j = 0; j < G.vexnum; j++) {
+            for (int k = 0; k < G.vexnum; k++) {
+                int dist1 = arr[j][i];
+                int dist2 = arr[i][k];
+                if (dist1 < INT_MAX && dist2 < INT_MAX) {
+                    if (dist1 + dist2 < arr[j][k]) {
+                        arr[j][k] = dist1 + dist2;
+                    }
+                }
+            }
+        }
+    }
+    
+    for (int i = 0; i < G.vexnum; i++) {
+        for (int j = 0; j < G.vexnum; j++) {
+            if (arr[i][j] == INT_MAX) {
+                printf("∞ ");
+            } else {
+                printf("%d ", arr[i][j]);
+            }
+        }
+        printf("\n");
+    }
+}
+
+// 时间复杂度O(v*v*v)
