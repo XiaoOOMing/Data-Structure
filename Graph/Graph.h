@@ -14,6 +14,7 @@
 #include <limits.h>
 
 #include "../Queue/Queue.h"
+#include "../Stack/stack.h"
 
 // 邻接矩阵法
 // 空间复杂度为(nxn)，只适合保存稠密图，否则会浪费大量的空间
@@ -108,4 +109,7 @@ void MST_Prim2(MGraph *G);
 void Dijkstra(MGraph G, int v);
 
 void Floyd(MGraph G);
+
+int TopologicalSort(MGraph G);
+
 #endif /* Graph_h */

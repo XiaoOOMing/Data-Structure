@@ -21,7 +21,7 @@ int VexNumber(MGraph *G, VertexType v) {
 
 int FirstNeighbor(MGraph *G, VertexType v) {
     for (int i = 0; i < G->vexnum; i++) {
-        if (G->Edge[v][i] > 0) {
+        if (G->Edge[v][i] > 0 && G->Edge[v][i] < INT_MAX) {
             return i;
         }
     }
@@ -30,7 +30,7 @@ int FirstNeighbor(MGraph *G, VertexType v) {
 
 int NextNeighbor(MGraph *G, VertexType v, VertexType w) {
     for (int i = w + 1; i < G->vexnum; i++) {
-        if (G->Edge[v][i] > 0) {
+        if (G->Edge[v][i] > 0 && G->Edge[v][i] < INT_MAX) {
             return i;
         }
     }
@@ -52,7 +52,7 @@ void BFSTraverse(MGraph *G) {
         visited[i] = 0;
     }
     for (int i = 0; i < G->vexnum; i++) {
-        if (visited[i] == 0) {
+        if (!visited[i]) {
             BFS(G, i);
         }
     }
@@ -65,8 +65,8 @@ void BFS(MGraph *G, int v) {
     // 循环上述条件知道队列为空
     // 一句话总结：点附近的点，对其访问然后入队，全局数组记录访问记录。（类似树的层次遍历）
     
-    SqQueue Sq;
-    SqQueue *Q = &Sq;
+    SqQueue sq;
+    SqQueue *Q = &sq;
     InitQueue(Q);
     
     visit(v);
@@ -75,8 +75,8 @@ void BFS(MGraph *G, int v) {
     
     while (!QueueEmpty(Q)) {
         DeQueue(Q, &v);
-        for (int w = FirstNeighbor(G, v); w>=0; w=NextNeighbor(G, v, w)) {
-            if (visited[w] == 0) {
+        for (int w = FirstNeighbor(G, v); w >= 0; w = NextNeighbor(G, v, w)) {
+            if (!visited[w]) {
                 visit(w);
                 visited[w] = 1;
                 EnQueue(Q, w);
@@ -92,29 +92,27 @@ void BFS(MGraph *G, int v) {
 void BFS_MIN_Distance(MGraph *G, int u) {
     int d[G->vexnum];
     for (int i = 0; i < G->vexnum; i++) {
-        d[i] = -1;
+        d[i] = INT_MAX;
     }
-    SqQueue Sq;
-    SqQueue *Q = &Sq;
+    
+    SqQueue sq;
+    SqQueue *Q = &sq;
     InitQueue(Q);
-
-    visited[u] = 1;
+    
     d[u] = 0;
+    visited[u] = 1;
     EnQueue(Q, u);
+    
     while (!QueueEmpty(Q)) {
         DeQueue(Q, &u);
-        for (int w = FirstNeighbor(G, u); w>=0; w=NextNeighbor(G, u, w)) {
-            if (visited[w] == 0) {
+        for (int w = FirstNeighbor(G, u); w >= 0; w = NextNeighbor(G, u, w)) {
+            if (!visited[w]) {
+                d[w] = d[u] + 1;
                 visited[w] = 1;
                 EnQueue(Q, w);
-                d[w] = d[u] + 1;
             }
         }
     }
-    for (int i = 0; i < G->vexnum; i++) {
-        printf("%d->%d:%d ", 1, i+1,d[i]);
-    }
-    printf("\n");
 }
 
 /*------------DFS深度优先搜索---------------*/
@@ -135,10 +133,11 @@ void DFS(MGraph *G, int v) {
     // 访问v，加入visited数组中
     // 遍历v的所有邻居顶点，如果顶点未被访问，递归DFS(G, w)
     // 总结：访问 然后递归，全局数组记录访问记录。
+    
     visit(v);
     visited[v] = 1;
     for (int w = FirstNeighbor(G, v); w >= 0; w = NextNeighbor(G, v, w)) {
-        if (visited[w] == 0) {
+        if (!visited[w]) {
             DFS(G, w);
         }
     }
@@ -159,14 +158,13 @@ void MST_Prim(MGraph *G) {
         adjvex[i] = 0;
     }
     
-    int min_arc = 0, min_vex = 0;
-    
+    int min_arc, min_vex = 0;
     for (int i = 1; i < G->vexnum; i++) {
         min_arc = INT_MAX;
         for (int j = 1; j < G->vexnum; j++) {
             if (min_weight[j] != 0 && min_weight[j] < min_arc) {
-                min_arc = min_weight[j];
                 min_vex = j;
+                min_arc = min_weight[j];
             }
         }
         min_weight[min_vex] = 0;
@@ -179,13 +177,13 @@ void MST_Prim(MGraph *G) {
     }
     
     for (int i = 0; i < G->vexnum; i++) {
-           printf("%d ", min_weight[i]);
-       }
-       printf("\n");
-       for (int i = 0; i < G->vexnum; i++) {
-           printf("%d ", adjvex[i]);
-       }
-       printf("\n");
+        printf("%d ", min_weight[i]);
+    }
+    printf("\n");
+    for (int i = 0; i < G->vexnum; i++) {
+        printf("%d ", adjvex[i]);
+    }
+    printf("\n");
 }
 
 void MST_Prim2(MGraph *G) {
@@ -357,3 +355,48 @@ void Floyd(MGraph G) {
 }
 
 // 时间复杂度O(v*v*v)
+
+
+/*---------------拓扑排序------------------*/
+
+int TopologicalSort(MGraph G) {
+    // 栈用于保存入度为零的顶点
+    SqStack st;
+    SqStack *S = &st;
+    InitStack(S);
+    // indegree表示每个顶点的入度
+    int indegree[G.vexnum];
+    int num;
+    for (int i = 0; i < G.vexnum; i++) {
+        num = 0;
+        for (int j = 0; j < G.vexnum; j++) {
+            if (j != i && G.Edge[j][i] > 0 && G.Edge[j][i] < INT_MAX) {
+                num++;
+            }
+        }
+        indegree[i] = num;
+    }
+    // 入度为0的顶点入栈
+    for (int i = 0; i < G.vexnum; i++) {
+        if (indegree[i] == 0) {
+            Push(S, i);
+        }
+    }
+    int count = 0;
+    int i;
+    while (!StackEmpty(*S)) {
+        Pop(S, &i);
+        printf("%d ", i);
+        count++;
+        
+        for (int w = FirstNeighbor(&G, i); w >= 0; w = NextNeighbor(&G, i, w)) {
+            if (!(--indegree[w])) {
+                Push(S, w);
+            }
+        }
+    }
+    if (count < G.vexnum) {
+        return 0;
+    }
+    return 1;
+}

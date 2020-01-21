@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <limits.h>
-#include "LinkList/LinkList.h"
 #include "Graph/Graph.h"
 
 int main(int argc, const char * argv[]) {
@@ -22,9 +21,9 @@ int main(int argc, const char * argv[]) {
     }
     
     EdgeType e[][4] = {
-        {0,1,3,8},
-        {INT_MAX,0,1,INT_MAX},
-        {INT_MAX,INT_MAX,0,4},
+        {0,1,1,INT_MAX},
+        {INT_MAX,0,1,1},
+        {INT_MAX,INT_MAX,0,1},
         {INT_MAX,INT_MAX,INT_MAX,0},
     };
     
@@ -41,6 +40,6 @@ int main(int argc, const char * argv[]) {
 //        printf("%d的第一个邻居编号是%d\n", i, FirstNeighbor(G, i));
 //    }
         
-    Floyd(*G);
+    TopologicalSort(*G);
     return 0;
 }

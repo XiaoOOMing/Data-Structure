@@ -49,10 +49,10 @@ void ClearStack(SqStack *S);
 
 
 // 链栈
-typedef struct LNode {
+typedef struct SLNode {
     ElemType data;
-    struct LNode *next;
-} LiStack, LNode;
+    struct SLNode *next;
+} LiStack, SLNode;
 
 // 初始化链栈
 void InitLiStack(LiStack *S);
